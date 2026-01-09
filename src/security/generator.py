@@ -8,6 +8,7 @@ class HashFactory:
 	salts: set[str] = set()
 	passwords: set[str] = set()
 	algorithm: str = 'sha1'
+	_verbose: bool = True
 
 	@property
 	def all(self) -> dict[str, set[str]]: 
@@ -17,7 +18,14 @@ class HashFactory:
 			Returns:
 				dict: A dictionary with algorithms as keys and sets of hashed values as values.
 		"""
-		hashes: dict[str, set[str]] = dict([[password, self[password]] for password in self.passwords])
+		def generate(password): 
+			print(f"Hashing “\033[1m{password}\033[0m”\033[5m with{'' if self.salts else 'out'} salts…\033[0m") if self._verbose else None
+			result: [str|set[str]] = [password, self[password]]
+			print(f"\033[F\033[KHashing “\033[1m{password}\033[0m” with{'' if self.salts else 'out'} salts \033[32mcomplete\033[0m.") if self._verbose else None
+
+			return result
+
+		hashes: dict[str, set[str]] = dict([generate(password) for password in self.passwords])
 		return hashes
 
 	def __getitem__(self, password: str) -> set[str]: 
